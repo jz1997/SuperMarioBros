@@ -12,15 +12,24 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
+import com.jz.game.supermariobros.screens.PlayScreen;
 import com.jz.game.supermariobros.sprites.Brick;
 import com.jz.game.supermariobros.sprites.Coin;
+import com.jz.game.supermariobros.sprites.Goomba;
+import com.jz.game.supermariobros.sprites.Mario;
 
 public class B2WorldCreator {
-    public B2WorldCreator(World world, TiledMap map) {
+    private Array<Goomba> goombas;
+
+    public B2WorldCreator(PlayScreen playScreen) {
         BodyDef bodyDef = new BodyDef();
         PolygonShape polygonShape = new PolygonShape();
         FixtureDef fixtureDef = new FixtureDef();
         Body body;
+
+        World world = playScreen.getWorld();
+        TiledMap map = playScreen.getMap();
 
 
         // create ground bodies/fixture
@@ -50,6 +59,7 @@ public class B2WorldCreator {
 
             polygonShape.setAsBox((rectangle.width / 2) / PPM, (rectangle.height / 2) / PPM);
             fixtureDef.shape = polygonShape;
+            fixtureDef.filter.categoryBits = Mario.OBJECT_BIT;
             body.createFixture(fixtureDef);
         }
 
@@ -58,7 +68,7 @@ public class B2WorldCreator {
             RectangleMapObject rectangleMapObject = (RectangleMapObject) object;
             Rectangle rectangle = rectangleMapObject.getRectangle();
 
-            new Coin(world, map, rectangle);
+            new Coin(playScreen, rectangle);
         }
 
         // create bricks bodies/fixture
@@ -66,7 +76,20 @@ public class B2WorldCreator {
             RectangleMapObject rectangleMapObject = (RectangleMapObject) object;
             Rectangle rectangle = rectangleMapObject.getRectangle();
 
-            new Brick(world, map, rectangle);
+            new Brick(playScreen, rectangle);
         }
+
+        // create goombas
+        goombas = new Array<>();
+        for (MapObject object : map.getLayers().get(6).getObjects().getByType(RectangleMapObject.class)) {
+            RectangleMapObject rectangleMapObject = (RectangleMapObject) object;
+            Rectangle rectangle = rectangleMapObject.getRectangle();
+
+            goombas.add(new Goomba(playScreen, rectangle.getX() / PPM, rectangle.getY() / PPM));
+        }
+    }
+
+    public Array<Goomba> getGoombas() {
+        return goombas;
     }
 }

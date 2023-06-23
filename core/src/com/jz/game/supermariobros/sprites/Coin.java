@@ -8,17 +8,18 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.jz.game.supermariobros.SuperMarioBros;
 import com.jz.game.supermariobros.scences.Hud;
+import com.jz.game.supermariobros.screens.PlayScreen;
 
 
 public class Coin extends InteractiveTileObject {
     private static TiledMapTileSet tileSet;
     private final int BLOCK_COIN = 28;
 
-    private Sound coinSound;
-    private Sound blockCoinSound;
+    private final Sound coinSound;
+    private final Sound blockCoinSound;
 
-    public Coin(World world, TiledMap map, Rectangle bounds) {
-        super(world, map, bounds);
+    public Coin(PlayScreen playScreen, Rectangle bounds) {
+        super(playScreen, bounds);
         fixture.setUserData(this);
         setCategoryFilter(Mario.COIN_BIT);
 

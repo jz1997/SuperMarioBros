@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.World;
 import com.jz.game.supermariobros.SuperMarioBros;
 import com.jz.game.supermariobros.scences.Hud;
+import com.jz.game.supermariobros.screens.PlayScreen;
 
 public class Brick extends InteractiveTileObject {
-    private Sound sound;
+    private final Sound sound;
 
-    public Brick(World world, TiledMap map, Rectangle bounds) {
-        super(world, map, bounds);
+    public Brick(PlayScreen playScreen, Rectangle bounds) {
+        super(playScreen, bounds);
         fixture.setUserData(this);
         setCategoryFilter(Mario.BRICK_BIT);
 

@@ -19,6 +19,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.jz.game.supermariobros.SuperMarioBros;
 import com.jz.game.supermariobros.scences.Hud;
+import com.jz.game.supermariobros.sprites.Enemy;
+import com.jz.game.supermariobros.sprites.Goomba;
 import com.jz.game.supermariobros.sprites.Mario;
 import com.jz.game.supermariobros.tools.B2WorldCreator;
 import com.jz.game.supermariobros.tools.WorldContactListener;
@@ -35,12 +37,15 @@ public class PlayScreen implements Screen {
     private OrthogonalTiledMapRenderer mapRenderer;
 
     // Box2d
+    private B2WorldCreator worldCreator;
     private World world;
     private Box2DDebugRenderer b2dr;
 
     private Mario mario;
 
     private Music music;
+
+    private Goomba goomba;
 
     public PlayScreen(SuperMarioBros game) {
         atlas = new TextureAtlas("Mario_and_Enemies.atlas");
@@ -66,13 +71,17 @@ public class PlayScreen implements Screen {
 
 
         // create world
-        new B2WorldCreator(world, map);
+        worldCreator = new B2WorldCreator(this);
 
-        mario = new Mario(world, this);
+        mario = new Mario(this);
 
+        // Music Play
         music = SuperMarioBros.assetManager.get("audio/music/mario_music.ogg", Music.class);
         music.setLooping(true);
         music.play();
+
+        // Goomba
+        goomba = new Goomba(this, 5.64f, .16f);
     }
 
     @Override
@@ -99,7 +108,13 @@ public class PlayScreen implements Screen {
         game.batch.setProjectionMatrix(camera.combined);
         game.batch.begin();
         mario.draw(game.batch);
+
+        // draw goomba
+        for (Enemy enemy : worldCreator.getGoombas()) {
+            enemy.draw(game.batch);
+        }
         game.batch.end();
+
 
         // draw hub camera sees
         game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
@@ -124,6 +139,12 @@ public class PlayScreen implements Screen {
         // update mario
         mario.update(dt);
 
+        // update goomba
+        for (Enemy enemy : worldCreator.getGoombas()) {
+            enemy.update(dt);
+        }
+//        goomba.update(dt);
+
         // update hud
         hud.update(dt);
 
@@ -143,6 +164,15 @@ public class PlayScreen implements Screen {
             mario.b2body.applyLinearImpulse(new Vector2(-0.1f, 0), mario.b2body.getWorldCenter(), true);
         }
     }
+
+    public TiledMap getMap() {
+        return this.map;
+    }
+
+    public World getWorld() {
+        return this.world;
+    }
+
 
     @Override
     public void resize(int width, int height) {

@@ -2,8 +2,6 @@ package com.jz.game.supermariobros.sprites;
 
 import static com.jz.game.supermariobros.SuperMarioBros.PPM;
 
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -39,15 +37,21 @@ public class Mario extends Sprite {
     private State previousState;
     private boolean runningRight;
 
-    public static final short DEFAULT_BIT = 1;
+    public static final short GROUND_BIT = 1;
     public static final short MARIO_BIT = 2;
     public static final short BRICK_BIT = 4;
     public static final short COIN_BIT = 8;
     public static final short DESTROY_BIT = 16;
+    // 例如水管等等
+    public static final short OBJECT_BIT = 32;
+    // 敌人
+    public static final short ENEMY_BIT = 64;
+    public static final short ENEMY_HEAD_BIT = 128;
 
-    public Mario(World world, PlayScreen screen) {
+
+    public Mario(PlayScreen screen) {
         super(screen.getAtlas().findRegion("little_mario"));
-        this.world = world;
+        this.world = screen.getWorld();
         defineMario();
 
         TextureAtlas.AtlasRegion littleMarioRegion = screen.getAtlas().findRegion("little_mario");
@@ -137,7 +141,7 @@ public class Mario extends Sprite {
         CircleShape shape = new CircleShape();
         fdef.shape = shape;
         fdef.filter.categoryBits = MARIO_BIT;
-        fdef.filter.maskBits = DEFAULT_BIT | COIN_BIT | BRICK_BIT;
+        fdef.filter.maskBits = GROUND_BIT | COIN_BIT | BRICK_BIT | OBJECT_BIT | ENEMY_BIT | ENEMY_HEAD_BIT;
         shape.setRadius(6 / PPM);
         b2body.createFixture(fdef);
 
